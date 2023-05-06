@@ -1,17 +1,14 @@
-.settings{
-    margin-left: 10px;
-    margin-right: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px
-}
-
 .keyboard {
   display: flex;
-  min-width: 100px;
-  min-height: 100px;
-  background: blue;
-  border: 10px solid white;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.keyboardRow{
+  display: flex;
+  position: relative;
+  height: 180px;
+  max-width: 800px;
 }
 
 .keyboard:focus {
@@ -19,17 +16,19 @@
 }
 
 .key {
-  height: 100%;
-  min-width: 100%;
   border-radius: 5px;
   border: rgb(92, 92, 92) 2px solid;
   display: flex;
   flex-direction: column;
   justify-content: end;
   box-sizing: border-box;
-  position: absolute;
   transition: transform 0.1s;
   transform-origin: top center;
+  height: 100%;
+}
+
+.flex{
+  display: flex;
 }
 
 .key.white {
@@ -37,23 +36,20 @@
 }
 
 .key.black {
-  transform: translateX(50%) scale(60%, 65%);
+  position: absolute;
+  transform: scale(60%, 65%); 
   background-color: black;
   z-index: 10;
 }
 
 .key.white.pressed {
   transform: rotateX(10deg);
+  box-shadow: inset 0 0 20px #606060;
 }
 
 .key.black.pressed {
-  transform: translate(50%) scale(60%, 65%) rotateX(10deg);
-}
-
-.key-container {
-  height: 180px;
-  min-width: 40px;
-  position: relative;
+  transform: scale(60%, 65%) rotateX(10deg);
+  box-shadow: inset 0 0 20px #ffffff;
 }
 
 .key-label {

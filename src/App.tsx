@@ -1,53 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import * as Tone from 'tone'
-import { Keyboard } from './components/Keyboard';
-import { Settings } from './type';
-
-const formatLabel = (str: string): string => {
-  const result = str.replace(/([A-Z])/g, " $1");
-  const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
-  return finalResult;
-}
+import { Keyboard, SettingsPane } from './components';
+import { useSettings } from './hooks';
 
 const synth = new Tone.PolySynth().toDestination();
 
 const App = (): JSX.Element => {
+  const {settings, update} = useSettings()
 
-  const [settings, setSettings] = useState<Settings>({
-    displayNotes: false,
-    displayKeys: true
-  })
-
-  const attack = (key: string) => {
-    synth.triggerAttack(key)
-  }
-
-  const release = (key: string) => {
-    synth.triggerRelease([key], Tone.now())
-  }
-
-  return <div>
-    <div className="settings">
-      {Object.entries(settings).map(([key, setting]) =>
-        <div>
-          <label>
-            {formatLabel(key)}
-          </label>
-          <input
-            type='checkbox'
-            checked={setting}
-            onChange={() => setSettings({ ...settings, [key]: !setting })}
-          />
-        </div>
-      )}
-    </div>
+  const attack = (key: string) => synth.triggerAttack(key)
+  const release = (key: string) => synth.triggerRelease([key], Tone.now())
+  
+  return <>
+    <SettingsPane
+      settings={settings}
+      onUpdateSettings={update}
+    />
     <Keyboard
       onAttack={attack}
       onRelease={release}
       settings={settings}
     />
-
-  </div>
+  </>
 }
 
 export default App;
