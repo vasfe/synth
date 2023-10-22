@@ -1,17 +1,12 @@
-import { useState } from "react";
 import { Setting, Settings } from "../type";
 import {
-    Container,
     Box,
-    IconButton,
     Checkbox,
-    Typography,
-    Collapse,
-    Card
+    Typography
 } from '@mui/material';
+import { CollapsibleBox } from "./UI/CollapsibleBox";
 
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import SettingsIcon from '@mui/icons-material/Settings'; type SettingsPaneProps = {
+type SettingsPaneProps = {
     settings: Settings,
     onUpdateSettings: (label: string, value: string) => void
 }
@@ -26,64 +21,73 @@ const validateNumberInput = (
 
 const SettingsPane = (props: SettingsPaneProps) => {
     const { settings, onUpdateSettings } = props;
-    const [open, setOpen] = useState(false);
 
     return (
-        <Card 
-        sx={{
-            border: "1px solid rgba(211,211,211,0.6)"
-        }}>
-            <IconButton
-                onClick={() => setOpen(!open)}
-                aria-label="expand"
-                size="small"
+        <CollapsibleBox
+        >
+            <Box sx={{
+                display: 'flex',
+                mx: 1,
+                flexWrap: 'wrap',
+                justifyContent: 'center'
+            }}
             >
-                {open ? <KeyboardArrowUpIcon />
-                    : <SettingsIcon />}
-            </IconButton>
-                <Collapse
-                    in={open}
-                    timeout="auto"
-                    unmountOnExit
-                >
-                    <Container sx={{
-                        display: "flex",
-                        gap: 2,
-                        flexWrap: 'wrap'
-                    }}>
-                        {
-                            Object.entries(settings).map(([key, setting]) =>
-                                <Box
-                                    key={setting.label}
-                                    sx={{ display: "flex" }}
-                                >
-                                    <Typography
-                                        align='center'
-                                    > {setting.label} </Typography>
-                                    {
-                                        typeof setting.value == "boolean" ?
-                                            <Checkbox
-                                                checked={setting.value}
-                                                onChange={() => { onUpdateSettings(key, (!setting.value).toString()) }}
-                                                sx={{ display: 'flex', height: 25 }}
+                {
+                    Object.entries(settings).map(([key, setting]) =>
+                        <Box
+                            key={setting.label}
+                            sx={{
+                                display: "flex",
+                                gap: .5,
+                                mx: 1
+                            }}
+                        >
+                            <Typography
+                                align='center'
+                            > {setting.label} </Typography>
+                            {
+                                typeof setting.value == "boolean" ?
+                                    <Checkbox
+                                        checked={setting.value}
+                                        onChange={() => { onUpdateSettings(key, (!setting.value).toString()) }}
+                                        sx={{ display: 'flex', height: 25 }}
 
-                                            />
-                                            :
-                                            <input
-                                                value={setting.value}
-                                                type='number'
-                                                min={setting.min}
-                                                max={setting.max}
-                                                onChange={(event) => { validateNumberInput(parseInt(event.target.value), setting) && onUpdateSettings(key, event.target.value) }}
-                                            />
-                                    }
-                                </Box>
-                            )
-                        }
-                    </Container>
-                </Collapse>
-        </Card>
+                                    />
+                                    :
+                                    <input
+                                        value={setting.value}
+                                        type='number'
+                                        min={setting.min}
+                                        max={setting.max}
+                                        onChange={(event) => { validateNumberInput(parseInt(event.target.value), setting) && onUpdateSettings(key, event.target.value) }}
+                                    />
+                            }
+                        </Box>
+                    )
+                }
+            </Box>
+        </CollapsibleBox>
     )
 }
+
+// type SettingType = "number" | "string" | "boolean"
+
+// type SettingProps = {}
+
+// function Setting <T>(props: Setting<T>) {
+
+//     switch (typeof props.value) {
+//         case "boolean":
+//             return <Checkbox
+//                 checked={props.value}
+//                 onChange={() => { onUpdateSettings(key, (!props.value).toString()) }}
+//                 sx={{ display: 'flex', height: 25 }}
+
+//             />
+        
+
+//     }
+
+// }
 
 export default SettingsPane;

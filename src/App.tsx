@@ -1,27 +1,27 @@
 import React from 'react';
-import * as Tone from 'tone'
-import { Keyboard, SettingsPane } from './components';
-import { useSettings } from './hooks';
-
-const synth = new Tone.PolySynth().toDestination();
+import { Keyboard, Chords } from './components';
+import { useSynth } from './hooks/synth';
+import { Container } from '@mui/material';
 
 const App = (): JSX.Element => {
-  const {settings, update} = useSettings()
+  // const { attack, release, playChords } = useSynth("FMSynth");
 
-  const attack = (key: string) => synth.triggerAttack(key)
-  const release = (key: string) => synth.triggerRelease([key], Tone.now())
-  
-  return <>
-    <SettingsPane
-      settings={settings}
-      onUpdateSettings={update}
-    />
+  return <Container
+    maxWidth='md'
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      flexDirection: 'column'
+    }}
+  >
     <Keyboard
-      onAttack={attack}
-      onRelease={release}
-      settings={settings}
+      // onAttack={attack}
+      // onRelease={release}
     />
-  </>
+    <Chords
+      // play={playChords}
+    />
+  </Container>
 }
 
 export default App;

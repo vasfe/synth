@@ -1,12 +1,12 @@
-import { KeySettings } from "../type";
+import { KeyboardSettings } from "../type";
 import { PianoKey } from "../type";
 import { notes } from '../notes';
-
+import { Box } from "@mui/material";
 import './keyboard.css';
 
 type KeyProps = {
-    note: PianoKey,
-    settings: KeySettings,
+    pianoKey: PianoKey,
+    settings: KeyboardSettings,
     isPressed: boolean,
     onPress: (note: PianoKey) => void,
     onRelease: (note: PianoKey) => void,
@@ -15,12 +15,12 @@ type KeyProps = {
 const keyWidth = 40;
 
 const Key = (props: KeyProps): JSX.Element => {
-    const { note, settings, isPressed, onPress, onRelease } = props;
+    const { pianoKey: key, settings, isPressed, onPress, onRelease } = props;
     const { displayKeys, displayNotes } = settings;
     let keyStyle: React.CSSProperties = { width: keyWidth }
 
-    if (note.isBlackKey) {
-        const left = keyWidth / 2 + keyWidth * Math.ceil((notes.indexOf(note.note) - 1) / 2)
+    if (key.isBlackKey) {
+        const left = keyWidth / 2 + keyWidth * Math.ceil((notes.indexOf(key.note) - 1) / 2)
         keyStyle = {
             ...keyStyle,
             left
@@ -28,23 +28,24 @@ const Key = (props: KeyProps): JSX.Element => {
     }
 
     return (
-        <div
-            className={`key ${note.isBlackKey ? 'black' : 'white'} ${isPressed ? 'pressed' : ''}`}
+        <Box
+            className={`key ${key.isBlackKey ? 'black' : 'white'} ${isPressed ? 'pressed' : ''}`}
             style={keyStyle}
-            onMouseEnter={settings.enableMouse.value ? () => onPress(note) : () => { }}
-            onMouseLeave={settings.enableMouse.value ? () => onRelease(note) : () => { }}
+            onMouseEnter={settings.enableMouse.value ? () => onPress(key) : () => { }}
+            onMouseLeave={settings.enableMouse.value ? () => onRelease(key) : () => { }}
+            key={key.note + key.octave}
         >
             {displayKeys.value &&
-                <div className={`key-label ${note.isBlackKey ? 'black' : 'white'}`}>
-                    {note.keyboardShortcut}
-                </div>
+                <Box className={`key-label ${key.isBlackKey ? 'black' : 'white'}`}>
+                    {key.keyboardShortcut}
+                </Box>
             }
             {displayNotes.value &&
-                <div className={`key-label ${note.isBlackKey ? 'black' : 'white'}`}>
-                    {note.note + note.octave}
-                </div>
+                <Box className={`key-label ${key.isBlackKey ? 'black' : 'white'}`}>
+                    {key.note + key.octave}
+                </Box>
             }
-        </div>
+        </Box>
     )
 }
 

@@ -1,72 +1,85 @@
 import React, { KeyboardEventHandler, useCallback, useEffect, useRef, useState } from "react"
-import { Note, Settings } from "../type";
+import { Note } from "../type";
 import { KeyboardKey, KeyboardMap, PianoKey } from "../type";
 import Key from "./Key";
 import { notes, } from "../notes";
 import { useKeyboard } from "../hooks/keyboard";
-
-import './keyboard.css';
+import { useKeyboardSettings } from "../hooks/settings";
+import { SettingsPane } from ".";
+import { CollapsibleBox } from "./UI/CollapsibleBox";
+import { Box } from "@mui/material";
+import { flexColumn } from "./styles";
+import StraightenIcon from '@mui/icons-material/Straighten';
+import { useSynth } from "../hooks/synth";
 
 type KeyboardProps = {
-    settings: Settings,
-    onAttack: (key: string) => void,
-    onRelease: (key: string) => void,
+    // attack: (keys: string[]) => void,
+    // release: (keys: string[]) => void,
 }
 
 const Keyboard = (props: KeyboardProps): JSX.Element => {
-    const { settings, onAttack, onRelease } = props;
-    const [disabledKeys, setDisabledKeys] = useState<PianoKey[]>([]);
+    // const { attack, release } = props;
+
+      const { attack, release } = useSynth("FMSynth");
+
+
+    const { settings, update } = useKeyboardSettings()
+    const [pressedKeys, setPressedKeys] = useState<PianoKey[]>([]);
     const keyboardRef = useRef<HTMLDivElement>(null);
     const keyboardMap: KeyboardMap = useKeyboard(settings.octaves.value, settings.startingOctave.value);
 
-    const getMappedShortcut = useCallback((note: Note, octave: number): KeyboardKey | undefined => {
-        const hasShortcut = Object.entries(keyboardMap).find(([_, key]) => note === key.note && key.octave === octave)
+    const getMappedShortcut = useCallback((note: Note): KeyboardKey | undefined => {
+        const hasShortcut = Object.entries(keyboardMap).find(([_, key]) => note.note === key.note && key.octave === note.octave)
         if (hasShortcut) {
             return hasShortcut[0] as KeyboardKey;
         }
     }, [keyboardMap])
 
     const handleAttack = useCallback((key: PianoKey): void => {
-        setDisabledKeys(prev => [...prev, key]);
-        onAttack(key.note + key.octave)
-    }, [onAttack])
+        setPressedKeys(prev => [...prev, key]);
+        attack([key.note + key.octave])
+    }, [attack])
 
     const handleRelease = useCallback((key: PianoKey): void => {
-        setDisabledKeys(prev => prev.filter(n => n !== key));
-        onRelease(key.note + key.octave)
-    }, [onRelease])
+        setPressedKeys(prev => prev.filter(n => n !== key));
+        release([key.note + key.octave])
+    }, [release])
 
     const handleKeyboardPress: KeyboardEventHandler<HTMLDivElement> = useCallback((event) => {
         const keyToProcess: PianoKey | undefined = keyboardMap[event.key.toUpperCase() as KeyboardKey];
-        if (keyToProcess && !disabledKeys.includes(keyToProcess)) {
+        if (keyToProcess && !pressedKeys.includes(keyToProcess)) {
             handleAttack(keyToProcess)
         }
-    }, [disabledKeys, handleAttack, keyboardMap])
+    }, [pressedKeys, handleAttack, keyboardMap])
 
     const handleKeyboardRelease: KeyboardEventHandler<HTMLDivElement> = useCallback((event) => {
         const keyToProcess: PianoKey | undefined = keyboardMap[event.key.toUpperCase() as KeyboardKey];
-        if (keyToProcess && disabledKeys.includes(keyToProcess)) {
+        if (keyToProcess && pressedKeys.includes(keyToProcess)) {
             handleRelease(keyToProcess)
         }
-    }, [disabledKeys, handleRelease, keyboardMap])
+    }, [pressedKeys, handleRelease, keyboardMap])
 
     const handleMousePress = useCallback((key: PianoKey) => {
-        if (!disabledKeys.includes(key)) {
+        if (!pressedKeys.includes(key)) {
             handleAttack(key)
         }
-    }, [disabledKeys, handleAttack],)
+    }, [pressedKeys, handleAttack],)
 
     const handleMouseRelease = useCallback((key: PianoKey) => {
-            handleRelease(key)
-            setDisabledKeys(disabledKeys.filter(k => k === key))
-    }, [disabledKeys, handleRelease],)
+        handleRelease(key)
+        setPressedKeys(pressedKeys.filter(k => k === key))
+    }, [pressedKeys, handleRelease],)
 
     const buildPianoKeyBoard = useCallback((octave: number): PianoKey[] => {
         return notes.map((note) => ({
             note: note,
             octave: octave,
+            duration: .5,
             isBlackKey: note.includes("#"),
-            keyboardShortcut: getMappedShortcut(note, octave)
+            keyboardShortcut: getMappedShortcut({
+                note: note,
+                octave: octave
+            })
         })
         )
     }, [getMappedShortcut])
@@ -78,32 +91,57 @@ const Keyboard = (props: KeyboardProps): JSX.Element => {
     }, [])
 
     return (
-        <div
-            className="keyboard"
-            tabIndex={0}
-            ref={keyboardRef}
-            onKeyDown={handleKeyboardPress}
-            onKeyUp={handleKeyboardRelease}
-            autoFocus
-        >
-            {
-                Array.from(Array(settings.octaves.value), (_, i) => {
-                    return <div className='keyboardRow'>
-                        {
-                            buildPianoKeyBoard(settings.startingOctave.value + i).map((note) => {
-                                return <Key
-                                    note={note}
-                                    settings={settings}
-                                    isPressed={disabledKeys.find((n) => n.note === note.note && n.octave === note.octave) !== undefined}
-                                    onPress={handleMousePress}
-                                    onRelease={handleMouseRelease}
-                                />
-                            })
-                        }
-                    </div>
-                })
-            }
-        </div >
+        <CollapsibleBox icon={<StraightenIcon/>}>
+            <Box sx={{
+                ...flexColumn,
+                paddingBottom: 2
+            }}>
+                <SettingsPane
+                    settings={settings}
+                    onUpdateSettings={update}
+                />
+                <Box
+                    tabIndex={0}
+                    ref={keyboardRef}
+                    onKeyDown={handleKeyboardPress}
+                    onKeyUp={handleKeyboardRelease}
+                    autoFocus
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        position: 'relative',
+                        justifyContent: 'center'
+                    }}
+                >
+                    {
+                        Array.from(Array(settings.octaves.value), (_, i) => {
+                            return <Box
+                                sx={{
+                                    display: 'flex',
+                                    position: 'relative',
+                                    height: 180,
+                                    maxWidth: 800
+                                }}
+                                key={i}
+                            >
+                                {
+                                    buildPianoKeyBoard(settings.startingOctave.value + i).map((note, i) => {
+                                        return <Key
+                                            pianoKey={note}
+                                            settings={settings}
+                                            isPressed={pressedKeys.find((n) => n.note === note.note && n.octave === note.octave) !== undefined}
+                                            onPress={handleMousePress}
+                                            onRelease={handleMouseRelease}
+                                            key={i}
+                                        />
+                                    })
+                                }
+                            </Box>
+                        })
+                    }
+                </Box >
+            </Box>
+        </CollapsibleBox >
     )
 }
 

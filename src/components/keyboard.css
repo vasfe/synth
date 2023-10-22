@@ -1,20 +1,3 @@
-.keyboard {
-  display: flex;
-  flex-wrap: wrap;
-  position: relative;
-}
-
-.keyboardRow{
-  display: flex;
-  position: relative;
-  height: 180px;
-  max-width: 800px;
-}
-
-.keyboard:focus {
-  border-color: rgb(154, 154, 154);
-}
-
 .key {
   border-radius: 5px;
   border: rgb(92, 92, 92) 2px solid;
@@ -25,10 +8,6 @@
   transition: transform 0.1s;
   transform-origin: top center;
   height: 100%;
-}
-
-.flex{
-  display: flex;
 }
 
 .key.white {
