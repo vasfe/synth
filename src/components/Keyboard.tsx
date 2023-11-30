@@ -9,19 +9,11 @@ import { SettingsPane } from ".";
 import { CollapsibleBox } from "./UI/CollapsibleBox";
 import { Box } from "@mui/material";
 import { flexColumn } from "./styles";
-import StraightenIcon from '@mui/icons-material/Straighten';
+import { Straighten } from '@mui/icons-material';
 import { useSynth } from "../hooks/synth";
 
-type KeyboardProps = {
-    // attack: (keys: string[]) => void,
-    // release: (keys: string[]) => void,
-}
-
-const Keyboard = (props: KeyboardProps): JSX.Element => {
-    // const { attack, release } = props;
-
-      const { attack, release } = useSynth("FMSynth");
-
+const Keyboard = (): JSX.Element => {
+    const { attack, release } = useSynth("FMSynth");
 
     const { settings, update } = useKeyboardSettings()
     const [pressedKeys, setPressedKeys] = useState<PianoKey[]>([]);
@@ -91,7 +83,7 @@ const Keyboard = (props: KeyboardProps): JSX.Element => {
     }, [])
 
     return (
-        <CollapsibleBox icon={<StraightenIcon/>}>
+        <CollapsibleBox icon={<Straighten />}>
             <Box sx={{
                 ...flexColumn,
                 paddingBottom: 2

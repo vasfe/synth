@@ -70,24 +70,4 @@ const SettingsPane = (props: SettingsPaneProps) => {
     )
 }
 
-// type SettingType = "number" | "string" | "boolean"
-
-// type SettingProps = {}
-
-// function Setting <T>(props: Setting<T>) {
-
-//     switch (typeof props.value) {
-//         case "boolean":
-//             return <Checkbox
-//                 checked={props.value}
-//                 onChange={() => { onUpdateSettings(key, (!props.value).toString()) }}
-//                 sx={{ display: 'flex', height: 25 }}
-
-//             />
-        
-
-//     }
-
-// }
-
 export default SettingsPane;

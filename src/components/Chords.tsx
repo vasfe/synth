@@ -10,15 +10,11 @@ import { Button } from './UI';
 import { ChordEditor, EditableChord } from './ChordEditor';
 import { getNoteDurationInSeconds } from '../utils';
 import { flexColumn } from './styles';
-import { Chord, ChordProps } from './Chord';
+import { Chord } from './Chord';
 import ViewWeekIcon from '@mui/icons-material/ViewWeek';
 import { useSynth } from '../hooks/synth';
 
-type ChordsProps = {
-    // play: (chords: ChordType[], tempo: number) => void,
-}
-
-const Chords = (props: ChordsProps): JSX.Element => {
+const Chords = (): JSX.Element => {
     const { playChords: play } = useSynth("FMSynth");
 
     const [playing, setPlaying] = useState<boolean>(false);

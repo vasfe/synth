@@ -1,11 +1,11 @@
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Chord, Instrument, NoteDuration } from "../type"
 import * as Tone from 'tone'
-import { PolySynth, Time } from "tone"
-import { makeNoteArrayFromChord } from "./chords";
-import { getNoteDurationInSeconds } from "../utils";
+import { PolySynth } from "tone"
+import { getNoteDurationInSeconds, noteArrayFromChord } from "../utils";
 
 const noteDelay = 0;
+const now = Tone.now()
 
 const defaultInstrument: Instrument = "FMSynth";
 export const useSynth = (instrument= defaultInstrument): {
@@ -13,7 +13,6 @@ export const useSynth = (instrument= defaultInstrument): {
     release: (keys: string[]) => void,
     playChords: (chord: Chord[], tempo: number) => void
 } => {
-    const now = Tone.now()
 
     const synth = useMemo(() => {
         let tone;
@@ -33,7 +32,7 @@ export const useSynth = (instrument= defaultInstrument): {
         return new PolySynth(tone).toDestination()
     }, [instrument]);
 
-    const attack = (
+    const attack = useCallback((
         keys: string[],
         duration?: NoteDuration
     ) => {
@@ -43,22 +42,22 @@ export const useSynth = (instrument= defaultInstrument): {
         else {
             synth.triggerAttack(keys, now)
         }
-    }
+    },[synth])
 
-    const playChords = (chords: Chord[], tempo: number) => {
+    const playChords = useCallback((chords: Chord[], tempo: number) => {
         let delay = 0;
         chords.forEach(chord => {
             const chordDurationInSeconds = getNoteDurationInSeconds(chord.duration, tempo)
             synth.triggerAttackRelease(
-                makeNoteArrayFromChord(chord),
+                noteArrayFromChord(chord),
                 chordDurationInSeconds + noteDelay,
                 Tone.now() + delay
             )
             delay += chordDurationInSeconds;
         });
-    }
+    },[synth])
 
-    const release = (keys: string[]) => synth.triggerRelease(keys, Tone.now())
+    const release = useCallback((keys: string[]) => synth.triggerRelease(keys, Tone.now()),[synth])
 
     return { attack, release, playChords };
 }

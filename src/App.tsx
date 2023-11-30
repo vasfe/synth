@@ -1,26 +1,16 @@
 import React from 'react';
 import { Keyboard, Chords } from './components';
-import { useSynth } from './hooks/synth';
 import { Container } from '@mui/material';
+import { flexColumn } from './components/styles';
 
 const App = (): JSX.Element => {
-  // const { attack, release, playChords } = useSynth("FMSynth");
 
   return <Container
     maxWidth='md'
-    sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      flexDirection: 'column'
-    }}
+    sx={flexColumn}
   >
-    <Keyboard
-      // onAttack={attack}
-      // onRelease={release}
-    />
-    <Chords
-      // play={playChords}
-    />
+    <Keyboard />
+    {/* <Chords /> */}
   </Container>
 }
 

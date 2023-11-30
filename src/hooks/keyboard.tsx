@@ -1,7 +1,7 @@
 import { KeyboardKey, KeyboardMap } from "../type";
 import { notes } from "../notes";
 import { useMemo } from "react";
-import { wrapIndex } from "../utils";
+import { getItemByWrappedIndex } from "../utils";
 
 const keys: KeyboardKey[] = [
     "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=",
@@ -16,9 +16,9 @@ export const useKeyboard = (octaves: number, startOctave: number): KeyboardMap =
         let i = 0;
         while (octaves * notes.length > i && keys.length > i) {
             map[keys[i]] = {
-                note: notes[wrapIndex(notes, i)],
+                note: getItemByWrappedIndex(notes, i),
                 octave: Math.floor(i / notes.length) + startOctave,
-                isBlackKey: notes[wrapIndex(notes, i)].includes("#")
+                isBlackKey: getItemByWrappedIndex(notes, i).includes("#")
             };
             i++
         }

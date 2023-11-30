@@ -2,7 +2,6 @@ import { KeyboardSettings } from "../type";
 import { PianoKey } from "../type";
 import { notes } from '../notes';
 import { Box } from "@mui/material";
-import './keyboard.css';
 
 type KeyProps = {
     pianoKey: PianoKey,
@@ -17,31 +16,67 @@ const keyWidth = 40;
 const Key = (props: KeyProps): JSX.Element => {
     const { pianoKey: key, settings, isPressed, onPress, onRelease } = props;
     const { displayKeys, displayNotes } = settings;
-    let keyStyle: React.CSSProperties = { width: keyWidth }
 
-    if (key.isBlackKey) {
-        const left = keyWidth / 2 + keyWidth * Math.ceil((notes.indexOf(key.note) - 1) / 2)
-        keyStyle = {
-            ...keyStyle,
-            left
-        }
+    const keyStyle = {
+        width: keyWidth,
+        borderRadius: '5px',
+        border: 'rgb(92, 92, 92) 2px solid',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'end',
+        boxSizing: 'border-box',
+        transition: 'transform 0.1s',
+        transformOrigin: 'top center',
+        height: '100%',
+        ...(
+            key.isBlackKey ? {
+                left: keyWidth / 2 + keyWidth * Math.ceil((notes.indexOf(key.note) - 1) / 2),
+                position: 'absolute',
+                transform: 'scale(60%, 65%)',
+                backgroundColor: 'black',
+                zIndex: 10,
+                ...(isPressed && {
+                    transform: 'scale(60%, 65%) rotateX(10deg)',
+                    boxShadow: 'inset 0 0 20px #ffffff',
+                })
+            } :
+                {
+                    ...(isPressed && {
+                        transform: 'rotateX(10deg)',
+                        boxShadow: 'inset 0 0 20px #606060'
+                    })
+                }
+
+        )
     }
 
     return (
         <Box
-            className={`key ${key.isBlackKey ? 'black' : 'white'} ${isPressed ? 'pressed' : ''}`}
-            style={keyStyle}
+            className={` ${key.isBlackKey ? 'black' : 'white'} ${isPressed ? 'pressed' : ''}`}
+            sx={keyStyle}
             onMouseEnter={settings.enableMouse.value ? () => onPress(key) : () => { }}
             onMouseLeave={settings.enableMouse.value ? () => onRelease(key) : () => { }}
             key={key.note + key.octave}
         >
             {displayKeys.value &&
-                <Box className={`key-label ${key.isBlackKey ? 'black' : 'white'}`}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: key.isBlackKey ? 'white' : 'black'
+                    }}
+                >
                     {key.keyboardShortcut}
                 </Box>
             }
             {displayNotes.value &&
-                <Box className={`key-label ${key.isBlackKey ? 'black' : 'white'}`}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: key.isBlackKey ? 'white' : 'black'
+                    }}
+                >
                     {key.note + key.octave}
                 </Box>
             }

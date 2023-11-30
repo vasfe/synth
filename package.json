@@ -2,6 +2,7 @@
   "name": "synth",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://vasfe.github.io/synth",
   "dependencies": {
     "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.8",
@@ -21,7 +22,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "tone": "^14.7.77",
-    "typescript": "^5.1.6",
+    "typescript": "^4.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -60,6 +61,7 @@
     "css-loader": "^6.7.3",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.0",
+    "gh-pages": "^6.1.0",
     "path": "^0.12.7",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.4.2",

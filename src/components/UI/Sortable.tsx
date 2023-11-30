@@ -3,7 +3,6 @@ import type { FC } from 'react'
 import { useRef } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import { Identifier } from 'typescript'
-// import { useSortable } from './SortableContainer'
 
 interface DragItem {
   index: number
@@ -40,11 +39,6 @@ export const Sortable: FC<SortableProps> = ({ id, index, children, move }) => {
       }
 
       move(dragIndex, hoverIndex)
-
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
       item.index = hoverIndex
     },
   })
